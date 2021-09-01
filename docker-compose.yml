@@ -1,0 +1,36 @@
+version: '3.3'
+services:
+  app:
+    build: .
+    restart: always
+    ports:
+      - 8080:8080
+    links:
+      - oracle
+    depends_on:
+      - oracle
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@localhost:1521/xe
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - backend-network
+  oracle:
+    image: jaspeen/oracle-xe-11g
+    container_name: oracle
+    volumes:
+      - ~/docker/data:/u01/app/oracle jaspeen/oracle-xe-11g
+    hostname: oracle
+    networks:
+      - backend-network
+    stdin_open: true
+    environment:
+      ORACLE_ROOT_PASSWORD: root
+    restart: always
+    ports:
+      - '1521:1521'
+volumes:
+  data:
+networks:
+  backend-network:
+    driver: bridge
